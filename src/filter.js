@@ -3,8 +3,23 @@ import productApi from './productApi';
 
 const Filter = () => {
     const [Items, setItems] = useState(productApi);
-    const categoryArr = [...new Set(Items.map(currentElement => currentElement.category))]
-    console.log(categoryArr);
+    const [isActive, setActive] = useState(false);
+    const categoryArr = [...new Set(productApi.map(currentElement => currentElement.category))]
+
+
+    const filterThis = (catItem) => {
+        setActive(current => !current);
+        const updateItems = productApi.filter((currentElem) => {
+            const parsecategory = currentElem.category.split(" ").join("");
+
+            return parsecategory === catItem
+        })
+
+        setItems(updateItems)
+
+
+    }
+
     return (
         <section className="category-tab">
             <div className="container">
@@ -17,25 +32,30 @@ const Filter = () => {
                 <div className="category-tab-wrapper tab-wrapper">
                     <ul className="tab-button-group" id="filters">
                         <li>
-                            <button className="tab-button is-checked" data-filter="All">
-                                Hair Care
+                            <button className='tab-button is-checked' data-filter="All" onClick={() => setItems(productApi)}>
+                                All
                             </button>
                         </li>
-                        <li>
-                            <button className="tab-button" data-filter="#color">COLOR</button>
-                        </li>
-                        <li>
-                            <button className="tab-button" data-filter="#treatments">TREATMENTS</button>
-                        </li>
+                        {
+                            categoryArr.map((currelement) => {
+                                return (
+                                    <li>
+
+                                        <button className={`tab-button  ${isActive ? 'is-checked' : ''} `} data-filter={currelement} onClick={() => filterThis(currelement.split(" ").join(""))}>{currelement}</button>
+                                    </li>
+                                )
+                            })
+                        }
+
                     </ul>
                     <div className="category-tab-grid tab-content">
-                        <div className="is-active tab-content--section" id="All">
+                        <div className="tab-content--section">
                             {
                                 Items.map((currentElement) => {
                                     const { id, name, image, category, price, sprice } = currentElement;
                                     return (
 
-                                        <div className="category-tab-grid-item All">
+                                        <div className={`category-tab-grid-item ${category.split(" ").join("")}`}>
                                             <div className="product-thumnail">
                                                 <img alt="" src={image} />
                                             </div>
@@ -67,51 +87,6 @@ const Filter = () => {
                                 })
                             }
                         </div>
-
-                        {
-                            categoryArr.map((currentElement) => {
-                                console.log('hello' + Items.currentElement);
-                                return (
-                                    <div className={`tab-content--section ${currentElement} `} id={currentElement}>
-                                        {
-                                            [...new Set(Items.filter(currentElem => currentElem.category == currentElement))].map((mapCat) => {
-                                                const { id, name, category, image, price, sprice } = mapCat;
-                                                return (
-                                                    <div className={`category-tab-grid-item ${category} `}>
-                                                        <div className="product-thumnail">
-                                                            <img alt="" src={image} />
-                                                        </div>
-                                                        <div className="product-detail">
-                                                            <div className="entry-meta">
-                                                                <span className="category">
-                                                                    <a href="">
-                                                                        {category}</a>
-                                                                </span>
-                                                            </div>
-                                                            <h2 className="product-title">
-                                                                <a href="">{name}</a>
-                                                            </h2>
-
-                                                            <span class="product-price">
-                                                                {
-                                                                    sprice ? <del>
-                                                                        <span class="shopify-Price-amount amount">
-                                                                            <bdi><span class="shopify-Price-currencySymbol">$</span>{price}</bdi></span>
-                                                                    </del>
-                                                                        : ''
-                                                                }
-
-                                                                <ins><span class="shopify-Price-amount amount"><bdi><span class="shopify-Price-currencySymbol">$</span>{sprice ? sprice : price}</bdi></span></ins>
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                )
-                            })
-                        }
                     </div>
                 </div>
             </div>
